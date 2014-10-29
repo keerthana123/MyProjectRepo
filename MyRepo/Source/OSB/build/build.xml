@@ -115,7 +115,7 @@
 	</target>
 
 
-	<target name="exportWsp" depends="echoAll,replaceConfig">
+	<target name="exportWsp" depends="echoAll">
 		<echo>
 #################################################################
 	Starting the Target "exportWsp"			
@@ -128,7 +128,7 @@
                 jar="${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar"
                 fork="true" 
                 failonerror="true" 
-                maxmemory="512m">
+                maxmemory="768m">
 
 			<jvmarg line="-XX:MaxPermSize=256m" />
             <arg line="-configJar ${config.jar}" />
@@ -147,12 +147,12 @@
 		</java>
 	</target>
 	
-	<target name="replaceConfig">
+	<!--target name="replaceConfig">
 	<echo>sap.config.find:${sap.config.find}</echo>
 	<echo>sap.config.replace:${sap.config.replace}</echo>
 		<replace dir="${workspace.dir}"  token="${sap.config.find}" value="${sap.config.replace}">		
 		</replace>
-	</target>
+	</target -->
 	
 <target name="exportAndImportWLS" depends="exportWsp,importRemote">
 <echo>
