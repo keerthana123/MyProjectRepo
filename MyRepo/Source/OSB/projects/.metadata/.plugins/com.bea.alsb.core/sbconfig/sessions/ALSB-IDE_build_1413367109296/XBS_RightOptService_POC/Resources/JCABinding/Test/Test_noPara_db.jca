@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:jcaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:jca><![CDATA[<adapter-config name="Test_noPara" adapter="Database Adapter" wsdlLocation="Test_noPara.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/DB/XRXConnection" UIConnectionName="t_KLG_RKS_XRX" adapterRef=""/>
+  <endpoint-interaction portType="Test_noPara_ptt" operation="Test_noPara">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="ProcedureName" value="G_RESULTSET_NOPARA"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>]]></con:jca>
+    <con:jcaDependency>
+        <con:wsdlRef wsdlLocation="Test_noPara.wsdl" ref="XBS_RightOptService_POC/Resources/JCABinding/Test/Test_noPara"/>
+    </con:jcaDependency>
+</con:jcaEntry>

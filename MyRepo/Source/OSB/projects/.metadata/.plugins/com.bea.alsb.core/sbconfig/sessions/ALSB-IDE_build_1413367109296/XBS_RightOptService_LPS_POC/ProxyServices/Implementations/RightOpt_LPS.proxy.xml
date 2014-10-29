@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/typesystem/config" xmlns:con1="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/config" xmlns:con4="http://www.bea.com/wli/sb/stages/routing/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="Mixed" xsi:type="con:MixedBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:request type="XML">
+        <con5:schema ref="XBS_RightOptService_LPS_POC/Resources/XSD/XBSRightOptWS" element="getResults" xmlns:con5="http://www.bea.com/wli/sb/typesystem/config"/>
+      </con:request>
+      <con:response type="XML">
+        <con5:schema ref="XBS_RightOptService_LPS_POC/Resources/XSD/XBSRightOptWS" element="getResultsResponse" xmlns:con5="http://www.bea.com/wli/sb/typesystem/config"/>
+      </con:response>
+    </ser:binding>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>local</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+  </ser:endpointConfig>
+  <ser:router>
+    <con1:pipeline type="request" name="PipelinePairNode1_request">
+      <con1:stage name="XRXRequestProcess">
+        <con1:context/>
+        <con1:actions>
+          <con2:log>
+            <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-7c3f</con3:id>
+            <con2:logLevel>info</con2:logLevel>
+            <con2:expr>
+              <con3:xqueryText>$body</con3:xqueryText>
+            </con2:expr>
+            <con2:message>********* Input Payload *************</con2:message>
+          </con2:log>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="PayloadProcess">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config"/>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+          <con1:log>
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-79bd</con2:id>
+            <con1:logLevel>info</con1:logLevel>
+            <con1:expr>
+              <con2:xqueryText>$body</con2:xqueryText>
+            </con1:expr>
+            <con1:message>******* Entry into RightOpt Service :: *********** Local Proxy Payload *********</con1:message>
+          </con1:log>
+          <con3:assign varName="xmlPayload">
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-79bc</con2:id>
+            <con3:expr>
+              <con2:xqueryText>fn-bea:inlinedXML($body/*:getResults/*:String_1/text())</con2:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con1:log>
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-79bb</con2:id>
+            <con1:logLevel>info</con1:logLevel>
+            <con1:expr>
+              <con2:xqueryText>$xmlPayload</con2:xqueryText>
+            </con1:expr>
+            <con1:message>************ LPS xmlPayload***********</con1:message>
+          </con1:log>
+          <con3:replace varName="body" contents-only="true">
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-79ba</con2:id>
+            <con3:location>
+              <con2:xpathText>.</con2:xpathText>
+            </con3:location>
+            <con3:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="XBS_RightOptService_LPS_POC/Resources/Transformations/XRX/WebServiceReqToRightOptReqMap"/>
+                <con2:param name="Request">
+                  <con2:path>$xmlPayload</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con3:expr>
+          </con3:replace>
+          <con1:log>
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-79b9</con2:id>
+            <con1:logLevel>info</con1:logLevel>
+            <con1:expr>
+              <con2:xqueryText>$body</con2:xqueryText>
+            </con1:expr>
+            <con1:message>************ Changed Body ************</con1:message>
+          </con1:log>
+        </con:actions>
+      </con1:stage>
+    </con1:pipeline>
+    <con1:pipeline type="response" name="PipelinePairNode1_response">
+      <con1:stage name="XRXResponseProcess">
+        <con1:context/>
+        <con1:actions>
+          <con2:log>
+            <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-7c1f</con3:id>
+            <con2:logLevel>info</con2:logLevel>
+            <con2:expr>
+              <con3:xqueryText>$body</con3:xqueryText>
+            </con2:expr>
+            <con2:message>********* Output Payload *************</con2:message>
+          </con2:log>
+        </con1:actions>
+      </con1:stage>
+    </con1:pipeline>
+    <con1:flow>
+      <con1:pipeline-node name="PipelinePairNode1">
+        <con1:request>PipelinePairNode1_request</con1:request>
+        <con1:response>PipelinePairNode1_response</con1:response>
+      </con1:pipeline-node>
+      <con1:route-node name="RouteNode1">
+        <con1:context/>
+        <con1:actions>
+          <con5:route xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config">
+            <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-790c</con3:id>
+            <con5:service ref="XeroxWS_LPS/BusinessServices/getRightOpt_db_bs" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con5:operation>getRightOpt</con5:operation>
+            <con5:outboundTransform/>
+            <con5:responseTransform>
+              <con5:log xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config">
+                <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-790b</con3:id>
+                <con5:logLevel>info</con5:logLevel>
+                <con5:expr>
+                  <con3:xqueryText>$body</con3:xqueryText>
+                </con5:expr>
+                <con5:message>*********** SP Response ***************</con5:message>
+              </con5:log>
+              <con4:assign varName="xmlContent">
+                <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-790a</con3:id>
+                <con4:expr>
+                  <con3:xqueryTransform>
+                    <con3:resource ref="XBS_RightOptService_LPS_POC/Resources/Transformations/XRX/RightOptResToWebServiceResMap"/>
+                    <con3:param name="outputParameters">
+                      <con3:path>$body/*:OutputParameters</con3:path>
+                    </con3:param>
+                  </con3:xqueryTransform>
+                </con4:expr>
+              </con4:assign>
+              <con5:log xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config">
+                <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-7909</con3:id>
+                <con5:logLevel>info</con5:logLevel>
+                <con5:expr>
+                  <con3:xqueryText>$xmlContent</con3:xqueryText>
+                </con5:expr>
+                <con5:message>************* xmlContent ************</con5:message>
+              </con5:log>
+              <con4:replace varName="body" contents-only="true">
+                <con3:id>_ActionId-5461105070523928916-21366057.148830f5eac.-7908</con3:id>
+                <con4:location>
+                  <con3:xpathText>.</con3:xpathText>
+                </con4:location>
+                <con4:expr>
+                  <con3:xqueryText>fn-bea:serialize($xmlContent)</con3:xqueryText>
+                </con4:expr>
+              </con4:replace>
+            </con5:responseTransform>
+          </con5:route>
+        </con1:actions>
+      </con1:route-node>
+    </con1:flow>
+  </ser:router>
+</xml-fragment>

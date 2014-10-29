@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:schemaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:schema><![CDATA[<schema targetNamespace="urn:DataAccessWebService/types" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:DataAccessWebService/types" >
+
+	<element name="getResults" type="tns:getResultsRequestType"/>
+	<element name="getResultsResponse" type="tns:getResultsResponseType"/>
+
+	<complexType name="getResultsRequestType">
+		<sequence minOccurs="1" maxOccurs="1">
+			<element name="String_1" type="string" minOccurs="1" maxOccurs="1"/>	
+			
+		</sequence>
+
+	</complexType>
+
+	<complexType name="getResultsResponseType">		
+				<sequence minOccurs="1" maxOccurs="1">				
+					<element name="String_1" type="string" minOccurs="0" maxOccurs="1"/>
+				</sequence>		
+	</complexType>
+	
+
+</schema>]]></con:schema>
+    <con:targetNamespace>urn:DataAccessWebService/types</con:targetNamespace>
+</con:schemaEntry>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con5:SoapBindingType" xmlns:con5="http://www.bea.com/wli/sb/services/bindings/config">
+      <con5:wsdl ref="XBS_DataAccessService_JAVA/Resources/WSDL/DataAccessWebService"/>
+      <con5:port>
+        <con5:name>DataAccessWebServiceSEIPort</con5:name>
+        <con5:namespace>urn:DataAccessWebService/wsdl</con5:namespace>
+      </con5:port>
+      <con5:selector type="SOAP body"/>
+      <con5:WSI-compliant>false</con5:WSI-compliant>
+    </ser:binding>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/webservice/DataAccessWebService</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-5461105070523928916-21366057.148830f5eac.-77c1">
+    <con:pipeline type="request" name="PipelinePairNode1_request">
+      <con:stage name="RoutingSybase">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config"/>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+          <con1:log xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/logging/config">
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-7e66</con2:id>
+            <con1:logLevel>info</con1:logLevel>
+            <con1:expr>
+              <con2:xqueryText>$body</con2:xqueryText>
+            </con1:expr>
+            <con1:message>*********** Original Payload *********</con1:message>
+          </con1:log>
+          <con1:assign varName="xmlInput">
+            <con2:id>_ActionId-8745596583473954087-4f254fba.14912972933.-7e2f</con2:id>
+            <con1:expr>
+              <con2:xqueryText>$body/*:getResults/*:String_1/text()</con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:javaCallout varName="strSPResponse">
+            <con2:id>_ActionId-601480210513951403-16c74768.148f9b1dbe4.-7ea2</con2:id>
+            <con1:archive ref="XBS_DataAccessService_JAVA/Resources/JARS/IVR_DataAccessWrapper"/>
+            <con1:className>com.acs.ivr.benefits.access.webservice.DataAccessWrapper</con1:className>
+            <con1:method>public static java.lang.String getResults(java.lang.String)</con1:method>
+            <con1:expr>
+              <con2:xqueryText>$xmlInput</con2:xqueryText>
+            </con1:expr>
+          </con1:javaCallout>
+          <con3:log xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config">
+            <con2:id>_ActionId-601480210513951403-16c74768.148f9b1dbe4.-7f0e</con2:id>
+            <con3:logLevel>info</con3:logLevel>
+            <con3:expr>
+              <con2:xqueryText>$strSPResponse</con2:xqueryText>
+            </con3:expr>
+            <con3:message>*************** Stored Procedure Response in OSB *********************</con3:message>
+          </con3:log>
+          <con1:replace contents-only="true" varName="body">
+            <con2:id>_ActionId-601480210513951403-16c74768.148f9b1dbe4.-7e63</con2:id>
+            <con1:location>
+              <con2:xpathText>.</con2:xpathText>
+            </con1:location>
+            <con1:expr>
+              <con2:xqueryText>&lt;typ:getResultsResponse xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:DataAccessWebService/types">
+&lt;result> {fn-bea:serialize($strSPResponse)} &lt;/result>
+&lt;/typ:getResultsResponse></con2:xqueryText>
+            </con1:expr>
+          </con1:replace>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="PipelinePairNode1_response"/>
+    <con:pipeline type="error" name="_onErrorHandler-5461105070523928916-21366057.148830f5eac.-77c1">
+      <con:stage name="ErrorHandler">
+        <con:context/>
+        <con:actions>
+          <con3:log>
+            <con2:id>_ActionId-5461105070523928916-21366057.148830f5eac.-77b0</con2:id>
+            <con3:logLevel>info</con3:logLevel>
+            <con3:expr>
+              <con2:xqueryText>$fault</con2:xqueryText>
+            </con3:expr>
+            <con3:message>************* Error Message *************</con3:message>
+          </con3:log>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="PipelinePairNode1">
+        <con:request>PipelinePairNode1_request</con:request>
+        <con:response>PipelinePairNode1_response</con:response>
+      </con:pipeline-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

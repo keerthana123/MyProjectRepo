@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:wsdlEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:wsdl><![CDATA[<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/GetRightOptACS" name="GetRightOptACS-concrete" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/GetRightOptACS" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/GetRightOptACS" location="GetRightOptACS.wsdl"/>
+  <binding name="GetRightOptACS_ptt-binding" type="tns:GetRightOptACS_ptt">
+    <soap:binding style="document" transport="http://www.bea.com/wli/sb/transports/jca"/>
+    <operation name="GetRightOptACS">
+      <soap:operation soapAction="GetRightOptACS"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="GetRightOptACS-service">
+    <port name="GetRightOptACS-port" binding="tns:GetRightOptACS_ptt-binding">
+      <soap:address location="jca://eis/DB/ACSConnection"/>
+    </port>
+  </service>
+</definitions>]]></con:wsdl>
+    <con:dependencies>
+        <con:import location="GetRightOptACS.wsdl" namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/GetRightOptACS">
+            <con:wsdl ref="XBS_RightOpt_Service/Resources/WSDLs/GetRightOptACS"/>
+        </con:import>
+    </con:dependencies>
+    <con:targetNamespace>http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/GetRightOptACS</con:targetNamespace>
+</con:wsdlEntry>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:wsdlEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:wsdl><![CDATA[<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/XRXDBOperations/XRXDBOperations/getUserDetails" name="getUserDetails-concrete" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/XRXDBOperations/XRXDBOperations/getUserDetails" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XRXDBOperations/XRXDBOperations/getUserDetails" location="../Resource/JCAXRX/getUserDetails.wsdl"/>
+  <binding name="getUserDetails_ptt-binding" type="tns:getUserDetails_ptt">
+    <soap:binding style="document" transport="http://www.bea.com/wli/sb/transports/jca"/>
+    <operation name="getUserDetails">
+      <soap:operation soapAction="getUserDetails"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="getUserDetails-service">
+    <port name="getUserDetails-port" binding="tns:getUserDetails_ptt-binding">
+      <soap:address location="jca://eis/DB/XRXDBConnection"/>
+    </port>
+  </service>
+</definitions>]]></con:wsdl>
+    <con:dependencies>
+        <con:import location="../Resource/JCAXRX/getUserDetails.wsdl" namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XRXDBOperations/XRXDBOperations/getUserDetails">
+            <con:wsdl ref="TestXRXSPPOC/Resource/JCAXRX/getUserDetails"/>
+        </con:import>
+    </con:dependencies>
+    <con:targetNamespace>http://xmlns.oracle.com/pcbpel/adapter/db/XRXDBOperations/XRXDBOperations/getUserDetails</con:targetNamespace>
+</con:wsdlEntry>

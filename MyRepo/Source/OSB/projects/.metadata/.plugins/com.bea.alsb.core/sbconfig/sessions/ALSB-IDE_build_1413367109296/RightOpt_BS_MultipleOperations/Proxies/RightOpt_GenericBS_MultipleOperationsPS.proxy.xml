@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true" isTracingEnabled="false">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="RightOpt_BS_MultipleOperations/Resources/WSDLs/XBSRightOptWs"/>
+      <con:port>
+        <con:name>RightOptWSSOAP</con:name>
+        <con:namespace>urn:DataAccessWebService/types/</con:namespace>
+      </con:port>
+      <con:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/RightOpt_BS_MultipleOperations/Proxies/RightOpt_GenericBS_MultipleOperationsPS</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router>
+    <con:pipeline type="request" name="PipelinePairNode1_request" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+      <con:stage name="stage1">
+        <con:context>
+          <con1:userNsDecl namespace="http://ivr.acshrsolutions.com/DAWS" prefix="daws" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
+          <con1:varNsDecl namespace="urn:DataAccessWebService/types" prefix="typ" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions>
+          <con1:assign varName="ReqXML" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+            <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7fbd</con2:id>
+            <con1:expr>
+              <con2:xqueryText xmlns:con2="http://www.bea.com/wli/sb/stages/config">fn-bea:inlinedXML($body/typ:getResults/typ:String_1)</con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con2:assign varName="spname">
+            <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7e8f</con3:id>
+            <con2:expr>
+              <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config">$ReqXML/daws:SP/text()</con3:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con1:assign varName="jdbcNM" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+            <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7f96</con2:id>
+            <con1:expr>
+              <con2:xqueryTransform xmlns:con2="http://www.bea.com/wli/sb/stages/config">
+                <con2:resource ref="RightOpt_BS_MultipleOperations/Resources/Transformations/Properties"/>
+              </con2:xqueryTransform>
+            </con1:expr>
+          </con1:assign>
+          <con1:assign varName="jdbcName" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+            <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7f78</con2:id>
+            <con1:expr>
+              <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config">$jdbcNM/row[SPNAME/text()=$spname]/JDBC/text()</con3:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:assign varName="operation1" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+            <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7f60</con2:id>
+            <con1:expr>
+              <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config">$jdbcNM/row[SPNAME/text()=$spname]/OPERATION/text()</con3:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con2:assign varName="address">
+            <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7e75</con3:id>
+            <con2:expr>
+              <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config">$jdbcNM/row[SPNAME/text()=$spname]/Address/text()</con3:xqueryText>
+            </con2:expr>
+          </con2:assign>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="PipelinePairNode1_response" xmlns:con="http://www.bea.com/wli/sb/pipeline/config"/>
+    <con:flow xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+      <con:pipeline-node name="PipelinePairNode1">
+        <con:request>PipelinePairNode1_request</con:request>
+        <con:response>PipelinePairNode1_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="RouteNode1">
+        <con:context>
+          <con3:userNsDecl namespace="http://ivr.acshrsolutions.com/DAWS" prefix="daws" xmlns:con3="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions>
+          <con1:dynamic-route>
+            <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7f05</con3:id>
+            <con1:service>
+              <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config"><![CDATA[<ctx:route>
+ <ctx:service isProxy='false'>RightOpt_GenericBS_MultipleOperations/Business Services/RightOptService_BS</ctx:service>
+ <ctx:operation>{$operation1}</ctx:operation>
+</ctx:route>]]></con3:xqueryText>
+            </con1:service>
+            <con1:outboundTransform>
+              <con2:transport-headers>
+                <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7ed8</con3:id>
+                <con2:header-set>outbound-request</con2:header-set>
+                <con2:header name="jca.db.XADataSourceName" value="expression">
+                  <con3:xqueryText xmlns:con3="http://www.bea.com/wli/sb/stages/config">$jdbcName</con3:xqueryText>
+                </con2:header>
+              </con2:transport-headers>
+              <con2:replace varName="body" contents-only="true">
+                <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-5005219490644883989--5b262b4f.148a7795e14.-7ead</con3:id>
+                <con2:location>
+                  <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">.</con3:xpathText>
+                </con2:location>
+                <con2:expr>
+                  <con3:dynamicXqueryTransform xmlns:con3="http://www.bea.com/wli/sb/stages/config">
+                    <con3:resourceExpr>$address</con3:resourceExpr>
+                    <con3:param name="ReqXML">
+                      <con3:path>$ReqXML</con3:path>
+                    </con3:param>
+                  </con3:dynamicXqueryTransform>
+                </con2:expr>
+              </con2:replace>
+            </con1:outboundTransform>
+            <con1:responseTransform/>
+          </con1:dynamic-route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

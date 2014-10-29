@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:schemaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:schema><![CDATA[<schema xmlns="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="urn:DataAccessWebService/types"
+            xmlns:soap11-enc="http://schemas.xmlsoap.org/soap/encoding/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+            targetNamespace="urn:DataAccessWebService/types">
+
+      <complexType name="getResults">
+        <sequence>
+          <element name="String_1" type="string" nillable="true"/>
+        </sequence>
+      </complexType>
+      <complexType name="getResultsResponse">
+        <sequence>
+          <element name="result" type="string" nillable="true"/>
+        </sequence>
+      </complexType>
+
+      <element name="getResults" type="tns:getResults"/>
+      <element name="getResultsResponse" type="tns:getResultsResponse"/>
+    </schema>]]></con:schema>
+    <con:targetNamespace>urn:DataAccessWebService/types</con:targetNamespace>
+</con:schemaEntry>

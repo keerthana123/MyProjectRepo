@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move 1 resources to &apos;ProxyService&apos;" description="Move 1 resources to &apos;ProxyService&apos;" destination="ProxyService" element1="DataAccessWS_PS.proxy" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1412954180999" updateReferences="true"/>
+</session>

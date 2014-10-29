@@ -1,0 +1,561 @@
+package com.acs.ivr.benefits.access.util;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ListIterator;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import oracle.jdbc.OracleTypes;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.acs.ivr.benefits.access.beans.CallableStmtArg;
+import com.acs.ivr.benefits.access.beans.DataAccessInputs;
+
+public class JDBCUtil
+    {
+     private static Logger logger = Logger.getLogger( JDBCUtil.class );
+     private static final String xsdns = "http://www.w3.org/2001/XMLSchema";
+     
+     private static final String PARAM_TYPE_IN ="IN";
+     private static final String PARAM_TYPE_OUT ="OUT";
+     private static final String PARAM_TYPE_INOUT ="INOUT";
+     
+     private static final String RETURN_CODE = "ReturnCode";
+
+     /*
+     * Create document using DOM api
+     */
+ 	
+    /* public JDBCUtil()
+     {
+     	CommonUtil.log4jLoader();
+     	
+     	
+     }*/
+ 	
+     
+    public static Document toDocument( DataAccessInputs inputs, CallableStatement stmt ) throws Exception
+        {
+    	logger.info(" Enter in JDBCUtil :: toDocument() ");
+        Document doc = null;
+        Element resultsElement = null;
+        
+        try
+            {
+            doc = getResultsDoc();
+            resultsElement = getResultsElement( doc );
+         
+            boolean results = stmt.execute();
+            boolean cursorResults = false;
+            int rsnum = 0; // Number of Result Sets processed
+            int rowsAffected = 0;       
+
+            // Any Oracle Cursor Output Args?
+            if( inputs.isOracleCall() )
+                cursorResults = inputs.hasCursorArgs();
+
+//            logger.debug("execute results: " + results );
+//            logger.debug("cursorResults: " + cursorResults );
+
+            do
+                {
+                if( results || cursorResults )
+                    {
+                    ResultSet rs = null;
+                    if( results )
+                        rs = stmt.getResultSet();
+                    else
+                        {
+                        int cursorIndex = inputs.getCursorArg().getIndex();
+                        rs = (ResultSet)stmt.getObject( cursorIndex );
+                        inputs.removeCallableArg( cursorIndex-1 );
+                        }
+
+                    resultsElement.appendChild( processResultSet( rs, doc ) );
+                    
+                    rsnum++;
+                    logger.debug("ResultSet: " + rsnum );
+                    rs.close();
+                    }
+                else
+                    {
+                    rowsAffected = stmt.getUpdateCount();
+                    if( rowsAffected >= 0 )
+                        logger.debug( rowsAffected + " rows Affected." );
+                    }
+
+                
+                results = stmt.getMoreResults();
+//                logger.debug("results: " + results );
+                
+                if( inputs.isOracleCall() )
+                    cursorResults = inputs.hasCursorArgs();
+//                logger.debug("cursorResults: " + cursorResults );
+                }
+            while( results || cursorResults || rowsAffected != -1 );
+
+            // Process OUTPUTS
+            if( inputs.getOutputArgCount() > 0 )
+                {
+                resultsElement.appendChild( processOutputs( inputs, stmt, doc ) );
+                }
+
+            }
+        catch( SQLException e ) 
+            {
+            Element errorElement = doc.createElement("daws:Errors");
+            errorElement.setAttribute("code", String.valueOf( e.getErrorCode() ) );
+            errorElement.appendChild( doc.createTextNode( e.getMessage() ) );
+            resultsElement.appendChild( errorElement );
+            }
+        logger.info("Exit from JDBCUtil :: toDocument() ");
+        return doc;
+      
+        }
+    
+    public static String prepareCallableStatement( DataAccessInputs inputs ) throws Exception
+        {
+	String callable="";
+        String args="";
+        
+        CallableStmtArg callableArg = null;
+      	for( ListIterator i = inputs.getCallableArg().listIterator(); i.hasNext(); )
+            {
+            callableArg = (CallableStmtArg)i.next();
+            if( callableArg.getName().equals( RETURN_CODE ) ) continue;
+            args += "?";
+            if( i.hasNext() ) args += ", ";
+            }
+
+	// Add return code parameter.
+	if( inputs.isReturnCode() ) 
+            callable = "{ ? = ";
+	else
+            callable = "{ ";
+    
+        callable += "call " + inputs.getStoredProc() + " ( "+args +" ) }";
+//        logger.debug("callable : " + callable);
+                 
+        return( callable );
+        }       
+
+    public static void processArguments( DataAccessInputs inputs, CallableStatement stmt ) throws Exception
+        {
+        CallableStmtArg callableArg = null;
+        StringBuffer sqlQuery = new StringBuffer(), declare;
+	boolean isString = false;
+	boolean withDetails = false;
+
+        sqlQuery.append("\nEXEC ");
+        sqlQuery.append( inputs.getStoredProc() );
+        sqlQuery.append(((!withDetails) ? "" : "\n" ));
+        
+       	for( ListIterator i = inputs.getCallableArg().listIterator(); i.hasNext(); )
+            {
+            callableArg = (CallableStmtArg)i.next();
+//            logger.debug("\n\nArg: " +callableArg.getIndex() +": "+ callableArg);
+            
+            if( callableArg.getType().equals( PARAM_TYPE_IN ) )
+                {
+                if( callableArg.getValue() == null )
+                    {
+                    isString = false;
+                    stmt.setNull( callableArg.getIndex(), callableArg.getJdbcType() ); 
+                    //stmt.setNull( callableArg.getName(), callableArg.getJdbcType() ); 
+                    }
+                else
+                    {
+                    isString = JDBCUtil.isStringType( callableArg.getJdbcType() );
+                    stmt.setObject( callableArg.getIndex(), callableArg.getValue() ); 
+                    //stmt.setObject( callableArg.getName(), callableArg.getValue() ); 
+                    }
+// ReturnCode never an "IN"                .
+//                if( !RETURN_CODE.equals( callableArg.getName() ) )
+//                    {
+                    sqlQuery.append( ((!withDetails) ? "" : "/* "+callableArg.getName()+" "+JDBCUtil.SQLTypeToString( callableArg.getJdbcType())+" */ ") );
+                    sqlQuery.append( ( (isString) ? "'" : "" ) );
+                    sqlQuery.append( callableArg.getValue() );
+                    sqlQuery.append( ( (isString) ? "'" : "") );
+                    sqlQuery.append( ((!withDetails) ? "" : "\n" ) );
+//                    }
+		}
+            else if( callableArg.getType().equals( PARAM_TYPE_OUT ) )
+		{
+		if( callableArg.getScale() > 0 ) 
+                    stmt.registerOutParameter( callableArg.getIndex(), callableArg.getJdbcType(), callableArg.getScale() );
+                    //stmt.registerOutParameter( callableArg.getName(), callableArg.getJdbcType(), callableArg.getScale() );
+		else
+                    stmt.registerOutParameter( callableArg.getIndex(), callableArg.getJdbcType() );
+                    //stmt.registerOutParameter( callableArg.getName(), callableArg.getJdbcType() );
+                
+                if( !RETURN_CODE.equals( callableArg.getName() ) )
+                    {
+                    declare = new StringBuffer();
+                    declare.append("\nDECLARE @");
+                    declare.append( callableArg.getName() );
+                    declare.append(" ");
+                    declare.append( JDBCUtil.SQLTypeToString( callableArg.getJdbcType() ) );
+
+                    sqlQuery.insert( 0, declare.toString());
+                    sqlQuery.append( ((!withDetails) ? "" : "/* "+callableArg.getName()+" "+JDBCUtil.SQLTypeToString( callableArg.getJdbcType())+" */ ") );
+                    sqlQuery.append("@");
+                    sqlQuery.append(callableArg.getName() );
+                    sqlQuery.append(" OUTPUT");
+                    sqlQuery.append( ((!withDetails) ? "" : "\n" ));
+                    }
+
+		}
+            else if( callableArg.getType().equals( PARAM_TYPE_INOUT ) )
+                {
+               if( callableArg.getValue() == null )
+                    {
+                    isString = false;
+                    stmt.setNull( callableArg.getIndex(), callableArg.getJdbcType() ); 
+                    //stmt.setNull( callableArg.getName(), callableArg.getJdbcType() ); 
+                    }
+                else
+                    {
+                    isString = JDBCUtil.isStringType( callableArg.getJdbcType() );
+                    stmt.setObject( callableArg.getIndex(), callableArg.getValue() ); 
+                    //stmt.setObject( callableArg.getName(), callableArg.getValue() ); 
+                    }
+
+       		if( callableArg.getScale() > 0 ) 
+                    stmt.registerOutParameter( callableArg.getIndex(), callableArg.getJdbcType(), callableArg.getScale() );
+                    //stmt.registerOutParameter( callableArg.getName(), callableArg.getJdbcType(), callableArg.getScale() );
+		else
+                    stmt.registerOutParameter( callableArg.getIndex(), callableArg.getJdbcType() );
+                    //stmt.registerOutParameter( callableArg.getName(), callableArg.getJdbcType() );
+                
+                if( !RETURN_CODE.equals( callableArg.getName() ) )
+                    {
+                    declare = new StringBuffer();
+                    declare.append("\nDECLARE @");
+
+                    declare.append( callableArg.getName() );
+                    declare.append(" ");
+                    declare.append( JDBCUtil.SQLTypeToString( callableArg.getJdbcType() ) );
+
+                    sqlQuery.insert( 0, declare.toString());
+
+                    sqlQuery.append( ((!withDetails) ? "" : "/* "+callableArg.getName()+" "+JDBCUtil.SQLTypeToString( callableArg.getJdbcType())+" */ ") );
+                    sqlQuery.append("@");
+                    sqlQuery.append(callableArg.getName() );
+                    sqlQuery.append("=");
+                    sqlQuery.append(( (isString) ? "'" : "" ));
+                    sqlQuery.append(callableArg.getValue() );
+                    sqlQuery.append(( (isString) ? "'" : ""));
+                    sqlQuery.append(" OUTPUT");
+                    sqlQuery.append(((!withDetails) ? "" : "\n" ));
+                    }
+
+                }
+            else  // Not IN, OUT or INOUT.
+        	{ 
+                throw new Exception("processArguments: unknown argument type");
+		}
+            
+            sqlQuery.append( (callableArg.getIndex()==1) ? " " : (( (callableArg.getIndex()) == inputs.getCallableArgSize() ) ? "\n" : ((!withDetails) ? ", " : "," )) );
+            }
+
+//        logger.debug( sqlQuery.toString() );
+        }
+    
+    public static Element processResultSet( ResultSet rs, Document doc ) throws Exception
+        {
+        Element resultSet = doc.createElement("daws:ResultSet");
+
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int colCount = rsmd.getColumnCount();
+
+        Element resultSetMetaData = doc.createElement("daws:ResultSetMetaData");
+        resultSetMetaData.setAttribute("ColumnCount", String.valueOf(colCount) );
+
+        Element columnMetaData;
+        for( int col=1; col <= colCount; col++ ) 
+            {
+            columnMetaData = doc.createElement("daws:ColumnMetaData"); 
+            columnMetaData.setAttribute("ColumnLabel", rsmd.getColumnLabel(col));
+            columnMetaData.setAttribute("ColumnTypeName", rsmd.getColumnTypeName(col));
+            columnMetaData.setAttribute("ColumnType", SQLTypeToString( rsmd.getColumnType(col) ) );
+            columnMetaData.setAttribute("ColumnDisplaySize", String.valueOf(rsmd.getColumnDisplaySize(col)));
+           
+            System.out.println("ColumnLabel :: "+ rsmd.getColumnLabel(col));
+            System.out.println("ColumnTypeName :: "+ rsmd.getColumnTypeName(col));
+            System.out.println("ColumnType :: "+ SQLTypeToString( rsmd.getColumnType(col) ) );
+            System.out.println("ColumnDisplaySize :: "+ String.valueOf(rsmd.getColumnDisplaySize(col)));
+            
+            
+            if( rsmd.isNullable(col) == ResultSetMetaData.columnNullable ) 
+                columnMetaData.setAttribute("Nullable", "true");
+            else 
+                columnMetaData.setAttribute("Nullable", "false");
+            resultSetMetaData.appendChild( columnMetaData );
+            }
+         
+        resultSet.appendChild( resultSetMetaData );
+       
+        Element resultSetData = doc.createElement("daws:ResultSetData");
+        
+        while( rs.next() )
+            {
+            Element row = doc.createElement("daws:Row");
+
+            for( int i = 1; i <= colCount; i++ )
+                {
+//              String columnName = rsmd.getColumnName(i);
+                String columnName = rsmd.getColumnLabel(i);
+                Object value = rs.getObject(i);
+
+                Element column = doc.createElement("daws:Column");
+                column.setAttribute("name", columnName );
+                
+                if( value != null  )
+                    column.appendChild( doc.createTextNode( value.toString() ) );
+                
+                row.appendChild( column );
+                }
+
+            resultSetData.appendChild(row);
+            }
+        
+        resultSet.appendChild( resultSetData );
+        
+        return( resultSet );
+        }
+
+    public static Element processOutputs( DataAccessInputs inputs, CallableStatement stmt, Document doc ) throws Exception
+        {
+        Element outputs = doc.createElement("daws:Outputs");
+        
+        Element outputData = doc.createElement("daws:OutputData");
+        outputData.setAttribute("ParameterCount", String.valueOf( inputs.getOutputArgCount() ) );
+
+        CallableStmtArg callableArg;
+        Element parameter;
+        Object value;
+        for( ListIterator i = inputs.getOutputArgs().listIterator(); i.hasNext(); )
+            {
+            callableArg = (CallableStmtArg)i.next();
+
+            value = stmt.getObject( callableArg.getIndex() );
+            if( stmt.wasNull() ) value = null;
+
+            parameter = doc.createElement("daws:Parameter"); 
+            parameter.setAttribute("name", callableArg.getName() );
+            parameter.setAttribute("type", SQLTypeToString( callableArg.getJdbcType() ) );
+            if( value != null  )
+                parameter.appendChild( doc.createTextNode( value.toString() ) );
+           
+            outputData.appendChild( parameter );
+            }
+
+        outputs.appendChild( outputData );
+
+        return( outputs );
+        }
+    
+    public static Document getResultsDoc() throws Exception
+        {
+        Document doc = null;
+        try 
+            {
+            doc = ((DocumentBuilderFactory.newInstance()).newDocumentBuilder()).newDocument();
+            } 
+        catch( ParserConfigurationException pce ) 
+            {
+            logger.error("getResultsDoc: Cannot create DOM tree:", pce );
+            throw new Exception("getResultsDoc: Cannot create DOM tree");
+            }
+        return( doc );
+        }
+
+     public static Element getResultsElement( Document doc ) throws Exception
+        {
+        Element resultsElement = null;
+        try 
+            {
+            resultsElement = doc.createElement("daws:Results");
+            resultsElement.setAttribute("xmlns:daws", "http://ivr.acshrsolutions.com/DAWS" );
+            resultsElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+            resultsElement.setAttribute("xsi:schemaLocation", "http://ivr.acshrsolutions.com/DAWS Results.xsd" );
+            doc.appendChild( resultsElement );
+            } 
+        catch( DOMException de ) 
+            {
+            logger.error("getResultsElement: Cannot create Results element:", de );
+            throw new Exception("getResultsElement: Cannot create Results element");
+            }
+
+        return( resultsElement );
+        }
+
+    public static String serialize( Document doc ) throws IOException
+        {
+        StringWriter writer = new StringWriter();
+        try
+            {
+            if( doc != null )
+                {
+                Transformer transformer = (TransformerFactory.newInstance()).newTransformer();
+                transformer.transform( new DOMSource( doc ), new StreamResult( writer ) );	
+                }
+            } 
+        catch( Exception e ) 
+            {
+            logger.error("Cannot create DOM tree:", e );
+//          e.printStackTrace();
+            }
+        
+        return writer.getBuffer().toString();
+        }
+
+    public static String SQLTypeToString( int type )
+        { 
+        switch( type ) 
+            {
+            case java.sql.Types.BIT :
+            case java.sql.Types.CHAR :
+            case java.sql.Types.LONGVARCHAR :
+            case java.sql.Types.VARCHAR :
+                return("string");
+            case java.sql.Types.BIGINT:
+            case java.sql.Types.DECIMAL:
+            case java.sql.Types.INTEGER :
+            case java.sql.Types.SMALLINT :
+                return("integer");
+            case java.sql.Types.FLOAT :
+                return("float");
+            case java.sql.Types.DOUBLE :
+            case java.sql.Types.REAL :
+                return("double");
+            case java.sql.Types.NUMERIC :
+                return("decimal");
+            case java.sql.Types.BOOLEAN :
+                return("boolean");
+            case java.sql.Types.TIME :
+                return("time");
+            case java.sql.Types.DATE :
+                return("date");
+            case java.sql.Types.TIMESTAMP :
+                return("datetime");
+            case java.sql.Types.TINYINT :
+                return("byte");
+            case OracleTypes.CURSOR :
+                return("cursor");
+            default :
+//              System.out.println( "SQLTypeToString warning: don't know how to handle type " + type );
+                logger.error("SQLTypeToString warning: don't know how to handle type " + type );
+                return("string");
+            }
+        }
+    
+    public static int getSQLType( String type )
+        {
+        if( type.equals("string") ) 
+            return( java.sql.Types.VARCHAR );
+        else if( type.equals("integer") ) 
+            return( java.sql.Types.INTEGER );
+        else if( type.equals("float") ) 
+            return(  java.sql.Types.FLOAT );
+        else if( type.equals("double") ) 
+            return( java.sql.Types.DOUBLE );
+        else if( type.equals("decimal") ) 
+            return( java.sql.Types.NUMERIC );
+        else if( type.equals("boolean") )
+            return( java.sql.Types.BOOLEAN );
+        else if( type.equals("time") )
+            return( java.sql.Types.TIME );
+        else if( type.equals("date") )
+            return( java.sql.Types.DATE );
+        else if( type.equals("datetime") ) 
+            return(  java.sql.Types.TIMESTAMP );
+        else if( type.equals("byte") ) 
+            return( java.sql.Types.TINYINT );
+        else if( type.equals("cursor") ) 
+            return( OracleTypes.CURSOR );
+        else 
+            { 
+//            System.out.println( "getSQLType warning: don't know how to handle type " + type );
+            logger.error("getSQLType warning: don't know how to handle type " + type );
+            return( java.sql.Types.VARCHAR );
+            }
+        }
+
+    public static boolean isStringType( int SQLType )
+        {
+        switch (SQLType)
+            {
+            case java.sql.Types.BIT:
+            case java.sql.Types.TINYINT:
+            case java.sql.Types.SMALLINT:
+            case java.sql.Types.INTEGER:
+            case java.sql.Types.BIGINT:
+            case java.sql.Types.FLOAT:
+            case java.sql.Types.REAL:
+            case java.sql.Types.DOUBLE:
+            case java.sql.Types.NUMERIC:
+            case java.sql.Types.DECIMAL:
+            case java.sql.Types.BINARY:
+            case java.sql.Types.VARBINARY:
+            case java.sql.Types.LONGVARBINARY:
+            case java.sql.Types.NULL:
+            case OracleTypes.CURSOR:
+                return false;
+            case java.sql.Types.CHAR:
+            case java.sql.Types.VARCHAR:
+            case java.sql.Types.LONGVARCHAR:
+            case java.sql.Types.DATE:
+            case java.sql.Types.TIME:
+            case java.sql.Types.TIMESTAMP:
+                return true;
+            }
+        return false;
+        }
+
+    public static Object getJavaTypeObject( String value, String type, int scale )
+        {
+        if( type.equals("string") || type.equals("cursor") ) 
+            return( value );
+        else if( type.equals("integer") || type.equals("byte") ) 
+            return( Integer.valueOf(value) );
+        else if( type.equals("float") ) 
+            return( Float.valueOf(value) );
+        else if( type.equals("double") ) 
+            return( Double.valueOf(value) );
+        else if( type.equals("decimal") ) 
+            if( scale > 0 )
+                return( BigDecimal.valueOf( Long.valueOf(value).longValue(), scale ) );
+            else
+                return( BigDecimal.valueOf( Long.valueOf(value).longValue() ) );
+        else if( type.equals("boolean") )
+            return( Boolean.valueOf(value) );
+        else if( type.equals("time") )
+            return( Time.valueOf(value) );
+        else if( type.equals("date") || type.equals("datetime") )
+            return( Timestamp.valueOf(value) );
+        else 
+            { 
+//          System.out.println( "getJavaTypeObject warning: don't know how to handle type " + type );
+            logger.error("getJavaTypeObject warning: don't know how to handle type " + type );
+            return( value );
+            }
+        }
+    }

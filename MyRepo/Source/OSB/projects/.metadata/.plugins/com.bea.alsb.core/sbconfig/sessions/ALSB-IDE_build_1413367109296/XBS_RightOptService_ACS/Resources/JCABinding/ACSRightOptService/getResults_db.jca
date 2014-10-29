@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:jcaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:jca><![CDATA[<adapter-config name="getResults" adapter="Database Adapter" wsdlLocation="getResults.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/DB/SavingsInSight_dc" UIConnectionName="SavingsInSight_dc" UIProcedureReturnStatus="true" UIStrongXSD="true" adapterRef=""/>
+  <endpoint-interaction portType="getResults_ptt" operation="getResults">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="SchemaName" value="KLG_RKS_ACS"/>
+      <property name="PackageName" value="dbo"/>
+      <property name="ProcedureName" value="g_RightOpt"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+    <output/>
+  </endpoint-interaction>
+
+</adapter-config>]]></con:jca>
+    <con:jcaDependency>
+        <con:wsdlRef wsdlLocation="getResults.wsdl" ref="XBS_RightOptService_ACS/Resources/JCABinding/ACSRightOptService/getResults"/>
+    </con:jcaDependency>
+</con:jcaEntry>

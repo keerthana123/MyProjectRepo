@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:jcaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:jca><![CDATA[<adapter-config name="TestWeblogic" adapter="Database Adapter" wsdlLocation="TestWeblogic.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/DB/TestWeblogic" UIConnectionName="TESTK_KLG_RKS_BEF" UIProcedureReturnStatus="true" UIStrongXSD="false" adapterRef=""/>
+  <endpoint-interaction portType="TestWeblogic_ptt" operation="TestWeblogic">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="PackageName" value="dbo"/>
+      <property name="ProcedureName" value="g_RightOpt"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+    <output/>
+  </endpoint-interaction>
+
+</adapter-config>]]></con:jca>
+    <con:jcaDependency>
+        <con:wsdlRef wsdlLocation="TestWeblogic.wsdl" ref="TestSybaseDrivers/Resources/JCABinding/BEF_RightOpt/TestWeblogic"/>
+    </con:jcaDependency>
+</con:jcaEntry>

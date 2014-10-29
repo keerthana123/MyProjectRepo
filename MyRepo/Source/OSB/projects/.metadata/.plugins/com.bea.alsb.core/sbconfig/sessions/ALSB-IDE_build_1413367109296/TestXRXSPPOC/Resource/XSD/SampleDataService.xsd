@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:schemaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:schema><![CDATA[<schema targetNamespace="http://www.xerox.com/SampleDataService" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.xerox.com/SampleDataService" >
+
+	<element name="sampleDataServiceRequest" type="tns:DataServiceRequestType"/>
+	<element name="sampleDataServiceResponse" type="tns:DataServiceResponseType"/>
+
+	<complexType name="DataServiceRequestType">
+		<sequence minOccurs="1" maxOccurs="1">
+			<element name="userID" type="string" minOccurs="1" maxOccurs="1"/>	
+			<element name="dbSchemaName" type="string" minOccurs="1" maxOccurs="1"/>		
+		</sequence>
+
+	</complexType>
+
+	<complexType name="DataServiceResponseType">		
+				<sequence minOccurs="1" maxOccurs="1">
+					<element name="userName" type="string" minOccurs="0" maxOccurs="1"/>
+					<element name="createdBy" type="string" minOccurs="0" maxOccurs="1"/>
+					<element name="date" type="string" minOccurs="0" maxOccurs="1"/>
+				</sequence>		
+	</complexType>
+	
+
+</schema>]]></con:schema>
+    <con:targetNamespace>http://www.xerox.com/SampleDataService</con:targetNamespace>
+</con:schemaEntry>

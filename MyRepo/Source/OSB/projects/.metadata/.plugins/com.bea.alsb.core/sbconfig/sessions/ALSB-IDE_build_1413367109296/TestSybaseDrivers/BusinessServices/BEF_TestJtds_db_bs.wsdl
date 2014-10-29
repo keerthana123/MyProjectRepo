@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:wsdlEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:wsdl><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/SybaseDriverTest/TestJtds" name="TestJtds-concrete" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/SybaseDriverTest/TestJtds" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/SybaseDriverTest/TestJtds" location="../Resources/JCABinding/BEF_RightOpt/TestJtds.wsdl"/>
+  <binding name="TestJtds_ptt-binding" type="tns:TestJtds_ptt">
+    <soap:binding style="document" transport="http://www.bea.com/wli/sb/transports/jca"/>
+    <operation name="TestJtds">
+      <soap:operation soapAction="TestJtds"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="TestJtds-service">
+    <port name="TestJtds-port" binding="tns:TestJtds_ptt-binding">
+      <soap:address location="jca://eis/DB/Jtds"/>
+    </port>
+  </service>
+</definitions>]]></con:wsdl>
+    <con:dependencies>
+        <con:import location="../Resources/JCABinding/BEF_RightOpt/TestJtds.wsdl" namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/SybaseDriverTest/TestJtds">
+            <con:wsdl ref="TestSybaseDrivers/Resources/JCABinding/BEF_RightOpt/TestJtds"/>
+        </con:import>
+    </con:dependencies>
+    <con:targetNamespace>http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/SybaseDriverTest/TestJtds</con:targetNamespace>
+</con:wsdlEntry>

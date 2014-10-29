@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:jca="http://www.bea.com/wli/sb/transports/jca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true" isAutoPublish="false" isTracingEnabled="false">
+    <ser:description/>
+    <ser:binding type="Mixed" xsi:type="con5:MixedBindingType" xmlns:con5="http://www.bea.com/wli/sb/services/bindings/config">
+      <con5:request type="XML">
+        <con1:schema ref="XBS_RightOpt_Service/Resources/Schemas/XBSRightOptWS" element="getResults"/>
+      </con5:request>
+      <con5:response type="XML">
+        <con1:schema ref="XBS_RightOpt_Service/Resources/Schemas/XBSRightOptWS" element="getResultsResponse"/>
+      </con5:response>
+    </ser:binding>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>local</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+  </ser:endpointConfig>
+  <ser:router>
+    <con:pipeline type="request" name="PipelinePairNode1_request">
+      <con:stage name="stage1">
+        <con:context>
+          <con3:varNsDecl namespace="urn:DataAccessWebService/types" prefix="typ"/>
+        </con:context>
+        <con:actions>
+          <con4:assign varName="XRXxml">
+            <con3:id>_ActionId-9161181953119112455--3fabd6f.148824e0bc2.-734d</con3:id>
+            <con4:expr>
+              <con3:xqueryText>fn-bea:inlinedXML($body/typ:getResults/String_1)</con3:xqueryText>
+            </con4:expr>
+          </con4:assign>
+          <con4:assign varName="FieldMappings">
+            <con3:id>_ActionId-9161181953119112455--3fabd6f.148824e0bc2.-7257</con3:id>
+            <con4:expr>
+              <con3:xqueryTransform>
+                <con3:resource ref="XBS_RightOpt_Service/Resources/Properties/FieldMappingProperties"/>
+              </con3:xqueryTransform>
+            </con4:expr>
+          </con4:assign>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="PipelinePairNode1_response">
+      <con:stage name="stage1">
+        <con:context>
+          <con3:varNsDecl namespace="urn:DataAccessWebService/types" prefix="typ"/>
+        </con:context>
+        <con:actions>
+          <con4:assign varName="RespXml">
+            <con3:id>_ActionId-844471611549515066--1922faf4.148ac1eaca1.-7f4f</con3:id>
+            <con4:expr>
+              <con3:xqueryTransform>
+                <con3:resource ref="XBS_RightOpt_Service/Resources/Properties/ResultSet_to_ACSRespXml"/>
+              </con3:xqueryTransform>
+            </con4:expr>
+          </con4:assign>
+          <con4:replace varName="body" contents-only="true">
+            <con3:id>_ActionId-844471611549515066--1922faf4.148ac1eaca1.-7f62</con3:id>
+            <con4:location>
+              <con3:xpathText>.</con3:xpathText>
+            </con4:location>
+            <con4:expr>
+              <con3:xqueryText>&lt;typ:getResultsResponse xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="urn:DataAccessWebService/types">
+&lt;result> {fn-bea:serialize($RespXml)} &lt;/result>
+&lt;/typ:getResultsResponse></con3:xqueryText>
+            </con4:expr>
+          </con4:replace>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="PipelinePairNode1">
+        <con:request>PipelinePairNode1_request</con:request>
+        <con:response>PipelinePairNode1_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="RouteTo_GetRightOptXRX_BS">
+        <con:context>
+          <con3:userNsDecl namespace="http://ivr.acshrsolutions.com/DAWS" prefix="daws"/>
+        </con:context>
+        <con:actions>
+          <con2:route>
+            <con3:id>_ActionId-9161181953119112455--3fabd6f.148824e0bc2.-73ea</con3:id>
+            <con2:service ref="XBS_RightOpt_Service/Business Services/GetRightOptXRX_BS" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con2:operation>GetRightOptXRX</con2:operation>
+            <con2:outboundTransform>
+              <con4:replace varName="body" contents-only="true">
+                <con3:id>_ActionId-9161181953119112455--3fabd6f.148824e0bc2.-7334</con3:id>
+                <con4:location>
+                  <con3:xpathText>.</con3:xpathText>
+                </con4:location>
+                <con4:expr>
+                  <con3:xqueryText><![CDATA[<get:InputParameters xmlns:get="http://xmlns.oracle.com/pcbpel/adapter/db/sp/GetRightOptXRX">
+    <!--Optional:-->
+     <get:COMP_NR>{$XRXxml/daws:Arg[@name=$FieldMappings/Mapping/RORequest/COMP_NR/text()]/text()}</get:COMP_NR>
+    <!--Optional:-->
+    <get:PLAN_NR>{$XRXxml/daws:Arg[@name=$FieldMappings/Mapping/RORequest/PLAN_NR/text()]/text()}</get:PLAN_NR>
+    <!--Optional:-->
+    <get:ID>{$XRXxml/daws:Arg[@name=$FieldMappings/Mapping/RORequest/ID/text()]/text()}</get:ID>
+</get:InputParameters>]]></con3:xqueryText>
+                </con4:expr>
+              </con4:replace>
+            </con2:outboundTransform>
+            <con2:responseTransform/>
+          </con2:route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

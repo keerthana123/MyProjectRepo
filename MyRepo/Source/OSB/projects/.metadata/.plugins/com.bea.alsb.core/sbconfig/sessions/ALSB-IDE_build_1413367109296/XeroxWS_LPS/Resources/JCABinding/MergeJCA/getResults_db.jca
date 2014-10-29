@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:jcaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:jca><![CDATA[<adapter-config name="getResults" adapter="Database Adapter" wsdlLocation="getResults.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/DB/ACSConnection" UIConnectionName="ACSConnection" adapterRef=""/>
+  <endpoint-interaction portType="getResults_ptt" operation="getSavingsInSight">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="SchemaName" value="KLG_RKS_ACS"/>
+      <property name="ProcedureName" value="G_SAVINGSINSIGHT_DC"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+    <output/>
+  </endpoint-interaction>
+  <endpoint-interaction portType="getResults_ptt" operation="getRightOpt">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="SchemaName" value="KLG_RKS_XRX"/>
+      <property name="ProcedureName" value="G_RIGHTOPT"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+    <output/>
+  </endpoint-interaction>
+
+</adapter-config>]]></con:jca>
+    <con:jcaDependency>
+        <con:wsdlRef wsdlLocation="getResults.wsdl" ref="XeroxWS_LPS/Resources/JCABinding/MergeJCA/getResults"/>
+    </con:jcaDependency>
+</con:jcaEntry>

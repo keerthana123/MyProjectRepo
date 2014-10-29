@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:wsdlEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:wsdl><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxApps/RightOpt/getRightOpt" name="getRightOpt-concrete" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxApps/RightOpt/getRightOpt" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxApps/RightOpt/getRightOpt" location="../Resources/JCABinding/XRXJCA/getRightOpt.wsdl"/>
+  <binding name="getRightOpt_ptt-binding" type="tns:getRightOpt_ptt">
+    <soap:binding style="document" transport="http://www.bea.com/wli/sb/transports/jca"/>
+    <operation name="getRightOpt">
+      <soap:operation soapAction="getRightOpt"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="getRightOpt-service">
+    <port name="getRightOpt-port" binding="tns:getRightOpt_ptt-binding">
+      <soap:address location="jca://eis/DB/XRXConnection"/>
+    </port>
+  </service>
+</definitions>]]></con:wsdl>
+    <con:dependencies>
+        <con:import location="../Resources/JCABinding/XRXJCA/getRightOpt.wsdl" namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxApps/RightOpt/getRightOpt">
+            <con:wsdl ref="XeroxWS_LPS/Resources/JCABinding/XRXJCA/getRightOpt"/>
+        </con:import>
+    </con:dependencies>
+    <con:targetNamespace>http://xmlns.oracle.com/pcbpel/adapter/db/XeroxApps/RightOpt/getRightOpt</con:targetNamespace>
+</con:wsdlEntry>

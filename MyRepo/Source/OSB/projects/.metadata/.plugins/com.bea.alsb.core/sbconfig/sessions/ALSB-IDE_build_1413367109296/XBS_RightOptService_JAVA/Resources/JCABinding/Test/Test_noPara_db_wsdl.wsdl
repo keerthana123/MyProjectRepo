@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:wsdlEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:wsdl><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/Test_noPara" name="Test_noPara-concrete" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/Test_noPara" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/Test_noPara" location="Test_noPara.wsdl"/>
+  <binding name="Test_noPara_ptt-binding" type="tns:Test_noPara_ptt">
+    <soap:binding style="document" transport="http://www.bea.com/wli/sb/transports/jca"/>
+    <operation name="Test_noPara">
+      <soap:operation soapAction="Test_noPara"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+    </operation>
+  </binding>
+  <service name="Test_noPara-service">
+    <port name="Test_noPara-port" binding="tns:Test_noPara_ptt-binding">
+      <soap:address location="jca://eis/DB/XRXConnection"/>
+    </port>
+  </service>
+</definitions>]]></con:wsdl>
+    <con:dependencies>
+        <con:import location="Test_noPara.wsdl" namespace="http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/Test_noPara">
+            <con:wsdl ref="XBS_RightOptService_JAVA/Resources/JCABinding/Test/Test_noPara"/>
+        </con:import>
+    </con:dependencies>
+    <con:targetNamespace>http://xmlns.oracle.com/pcbpel/adapter/db/XeroxPOC/RightOpt/Test_noPara</con:targetNamespace>
+</con:wsdlEntry>

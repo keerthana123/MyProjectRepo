@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:jcaEntry xmlns:con="http://www.bea.com/wli/sb/resources/config">
+    <con:jca><![CDATA[<adapter-config name="getUserInfo" adapter="Database Adapter" wsdlLocation="getUserInfo.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/DB/DBConnection" UIConnectionName="DBConnection" adapterRef=""/>
+  <endpoint-interaction portType="getUserInfo_ptt" operation="getUserInfo">
+    <interaction-spec className="oracle.tip.adapter.db.DBStoredProcedureInteractionSpec">
+      <property name="SchemaName" value="TFDB"/>
+      <property name="ProcedureName" value="GETDBUSERINFOBYUSERID"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+    <output/>
+  </endpoint-interaction>
+
+</adapter-config>]]></con:jca>
+    <con:jcaDependency>
+        <con:wsdlRef wsdlLocation="getUserInfo.wsdl" ref="TestXRXSPPOC/Resource/JCA/getUserInfo"/>
+    </con:jcaDependency>
+</con:jcaEntry>
