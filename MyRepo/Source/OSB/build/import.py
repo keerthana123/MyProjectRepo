@@ -3,14 +3,9 @@ from java.util import HashSet
 from java.util import ArrayList
 from java.io import FileInputStream
 
-from com.bea.wli.sb.management.importexport import ALSBImportOperation
-from com.bea.wli.sb.util import EnvValueTypes
 from com.bea.wli.sb.util import Refs
 from com.bea.wli.config.customization import Customization
-from com.bea.wli.config.customization import FindAndReplaceCustomization
-from com.bea.wli.config.env import EnvValueQuery
-from com.bea.wli.config import Ref
-
+from com.bea.wli.sb.management.importexport import ALSBImportOperation
 
 import sys
 
@@ -43,13 +38,12 @@ def importToALSBDomain():
             alsbImportPlan.setPassphrase(passphrase)
             alsbImportPlan.setPreserveExistingEnvValues(true)
             importResult = ALSBConfigurationMBean.importUploaded(alsbImportPlan)
-            SessionMBean.activateSession(sessionName, "Complete test import with customization using wlst")
+            SessionMBean.activateSession(sessionName, "Complete import without customization using wlst")
         else:
             print 'ALSB project', project, 'will get overlaid'
             alsbJarInfo = ALSBConfigurationMBean.getImportJarInfo()
             alsbImportPlan = alsbJarInfo.getDefaultImportPlan()
             alsbImportPlan.setPassphrase(passphrase)
-            alsbImportPlan.setPreserveExistingEnvValues(false)
             operationMap=HashMap()
             operationMap = alsbImportPlan.getOperations()
             print
@@ -57,6 +51,7 @@ def importToALSBDomain():
             printOpMap(operationMap)
             set = operationMap.entrySet()
 
+            alsbImportPlan.setPreserveExistingEnvValues(true)
 
             #boolean
             abort = false
@@ -72,8 +67,10 @@ def importToALSBDomain():
                     if op.getOperation() == ALSBImportOperation.Operation.Create:
                         print 'Unable to import a service account or a service provider on a target system', ref
                         abort = true
-                elif op.getOperation() == ALSBImportOperation.Operation.Create:
+#                elif op.getOperation() == ALSBImportOperation.Operation.Create:
+                else:
                     #keep the list of created resources
+                    print 'ref: ',ref
                     createdRef.add(ref)
 
             if abort == true :
@@ -110,7 +107,7 @@ def importToALSBDomain():
 
                 ALSBConfigurationMBean.customize(filteredCustomizationList)
 
-            SessionMBean.activateSession(sessionName, "Complete test import with customization using wlst")
+            SessionMBean.activateSession(sessionName, "Complete import with customization using wlst")
 
         print "Deployment of : " + importJar + " successful"
     except:
