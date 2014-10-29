@@ -57,7 +57,7 @@
 						<phase>compile</phase>
 						<configuration>
 							<target>
-								<ant antfile="./build.xml" target="exportFromWorkspace" />
+								<ant antfile="./build.xml" target="exportWsp" />
 							</target>
 						</configuration>
 						<goals>
