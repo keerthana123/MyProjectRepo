@@ -128,7 +128,7 @@
                 jar="${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar"
                 fork="true" 
                 failonerror="true" 
-                maxmemory="1024m">
+                maxmemory="768m">
 
 			<jvmarg line="-XX:MaxPermSize=256m" />
             <arg line="-configJar ${config.jar}" />
