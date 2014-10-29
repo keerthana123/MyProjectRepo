@@ -25,6 +25,7 @@
 		<path refid="task.import.classpath" />
 		<pathelement path="${osb.home}/lib/alsb.jar" />
         <pathelement path="${osb.home}/modules/com.bea.common.configfwk_1.5.0.0.jar" />
+		<pathelement path="${osb.home}/lib/sb-kernel-api.jar" />
 	</path>
 
 
