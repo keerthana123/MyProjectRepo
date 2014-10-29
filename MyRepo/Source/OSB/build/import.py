@@ -6,8 +6,8 @@ from java.io import FileInputStream
 from com.bea.wli.sb.management.importexport import ALSBImportOperation
 from com.bea.wli.sb.util import EnvValueTypes
 from com.bea.wli.sb.util import Refs
-#from com.bea.wli.config.customization import Customization
-#from com.bea.wli.config.customization import FindAndReplaceCustomization
+from com.bea.wli.config.customization import Customization
+from com.bea.wli.config.customization import FindAndReplaceCustomization
 from com.bea.wli.config.env import EnvValueQuery
 from com.bea.wli.config import Ref
 

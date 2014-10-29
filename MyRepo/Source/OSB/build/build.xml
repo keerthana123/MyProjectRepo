@@ -95,7 +95,7 @@
                 executeScriptBeforeFile="true" 
                 debug="false" 
                 failOnError="false" 
-                arguments="${wls.username} ${wls.password} ${wls.server} ${import.project} ${import.jar}">
+                arguments="${wls.username} ${wls.password} ${wls.server} ${import.project} ${import.jar} ${import.customFile}">
 
 			<classpath refid="wlst.classpath" />
 
@@ -104,7 +104,8 @@
                 adminPassword=sys.argv[2]  
                 adminUrl=sys.argv[3]
                 project=sys.argv[4]
-                importJar=sys.argv[5]                
+                importJar=sys.argv[5]
+                customFile=sys.argv[6]
 
                 passphrase = "osb"
                 connect(adminUser,adminPassword,adminUrl) 
