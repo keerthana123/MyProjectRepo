@@ -113,6 +113,42 @@
           </script>
 		</wlst>
 	</target>
+	
+	<path id="library.osb">
+        <fileset dir="${osb.home}/modules">
+          <include name="com.bea.common.configfwk_1.6.0.0.jar"/>
+          <include name="com.bea.core.xml.xmlbeans_2.2.0.0_2-5-1.jar"/>
+        </fileset>
+        <fileset dir="${weblogic.home}/server/lib">
+          <include name="weblogic.jar"/>
+        </fileset>
+        <fileset dir="${osb.home}/lib">
+          <include name="alsb.jar"/>
+        </fileset>
+     </path>
+	
+	<target name="exportFromWorkspace">
+       <delete failonerror="false" includeemptydirs="true"
+               dir="${metadata.dir}"/>
+       <java dir="${eclipse.home}" classpathref="library.osb"
+             jar="${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar"
+             fork="true" failonerror="true" maxmemory="768m">
+          <jvmarg line="-XX:MaxPermSize=256m"/> 
+          <arg line="-data ${workspace.dir}"/>
+          <arg line="-application com.bea.alsb.core.ConfigExport"/>
+          <arg line="-configProject ${config.project}"/>
+          <arg line="-configJar ${config.jar}"/>
+          <arg line="-configSubProjects ${config.subprojects}"/>
+          <arg line="-includeDependencies ${config.includeDependencies}"/>
+          <sysproperty key="weblogic.home" value="${weblogic.home}"/>
+          <sysproperty key="osb.home" value="${osb.home}"/>
+          <sysproperty key="osgi.bundlefile.limit" value="500"/>
+          <sysproperty key="harvester.home" value="${osb.home}/harvester"/>
+          <sysproperty key="osgi.nl" value="en_US"/>
+          <sysproperty key="sun.lang.ClassLoader.allowArraySyntax" value="true"/>
+         <sysproperty key="middleware.home" value="${fmw.home}"/>
+       </java>
+    </target>
 
 
 	<target name="exportWsp" depends="echoAll">
@@ -137,6 +173,7 @@
 			<arg line="-includeDependencies ${config.includeDependencies}" />
             <arg line="-data ${workspace.dir}" />
             <arg line="-application com.bea.alsb.core.ConfigExport" />
+			<sysproperty key="middleware.home" value="${fmw.home}"/>
 			<sysproperty key="weblogic.home" value="${weblogic.home}" />
 			<sysproperty key="osb.home" value="${osb.home}" />
 			<sysproperty key="osgi.bundlefile.limit" value="500" />
