@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:DataAccessWebService/wsdl" xmlns:ns2="urn:DataAccessWebService/types" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="DataAccessWebService" targetNamespace="urn:DataAccessWebService/wsdl">
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:DataAccessWebService/types" xmlns:soap11-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:DataAccessWebService/types">
+      <complexType name="getClientData">
+        <sequence>
+          <element name="String_1" type="string" nillable="true"/></sequence></complexType>
+      <complexType name="getClientDataResponse">
+        <sequence>
+          <element name="result" type="string" nillable="true"/></sequence></complexType>
+      <complexType name="getResults">
+        <sequence>
+          <element name="String_1" type="string" nillable="true"/></sequence></complexType>
+      <complexType name="getResultsResponse">
+        <sequence>
+          <element name="result" type="string" nillable="true"/></sequence></complexType>
+      <element name="getClientData" type="tns:getClientData"/>
+      <element name="getClientDataResponse" type="tns:getClientDataResponse"/>
+      <element name="getResults" type="tns:getResults"/>
+      <element name="getResultsResponse" type="tns:getResultsResponse"/></schema></types>
+  <message name="DataAccessWebServiceSEI_getClientData">
+    <part name="parameters" element="ns2:getClientData"/></message>
+  <message name="DataAccessWebServiceSEI_getClientDataResponse">
+    <part name="result" element="ns2:getClientDataResponse"/></message>
+  <message name="DataAccessWebServiceSEI_getResults">
+    <part name="parameters" element="ns2:getResults"/></message>
+  <message name="DataAccessWebServiceSEI_getResultsResponse">
+    <part name="result" element="ns2:getResultsResponse"/></message>
+  <portType name="DataAccessWebServiceSEI">
+    <operation name="getClientData">
+      <input message="tns:DataAccessWebServiceSEI_getClientData"/>
+      <output message="tns:DataAccessWebServiceSEI_getClientDataResponse"/></operation>
+    <operation name="getResults">
+      <input message="tns:DataAccessWebServiceSEI_getResults"/>
+      <output message="tns:DataAccessWebServiceSEI_getResultsResponse"/></operation></portType>
+  <binding name="DataAccessWebServiceSEIBinding" type="tns:DataAccessWebServiceSEI">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="getClientData">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output></operation>
+    <operation name="getResults">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output></operation></binding>
+  <service name="DataAccessWebService">
+    <port name="DataAccessWebServiceSEIPort" binding="tns:DataAccessWebServiceSEIBinding">
+      <soap:address location="http://acspitsun114:8080/webservice/DataAccessWebService" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"/>
+	  </port>
+	  </service>
+</definitions>

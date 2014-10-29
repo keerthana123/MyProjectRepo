@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:daws="http://ivr.acshrsolutions.com/DAWS"
+            targetNamespace="http://ivr.acshrsolutions.com/DAWS"
+            elementFormDefault="qualified" 
+            attributeFormDefault="unqualified">
+            
+	<xsd:element name="Results">
+		<xsd:complexType>
+			<xsd:sequence>
+
+				<xsd:element name="ResultSet" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+
+							<xsd:element name="ResultSetMetaData" minOccurs="0">
+								<xsd:complexType>
+							   		<xsd:sequence>
+										<xsd:element name="ColumnMetaData" minOccurs="0" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:attribute name="ColumnLabel" use="required"> 
+													<xsd:simpleType>
+														<xsd:restriction base="xsd:string">
+															<xsd:maxLength value="30"/>
+														</xsd:restriction>
+													</xsd:simpleType>
+								 				</xsd:attribute>
+								 				<xsd:attribute name="ColumnTypeName" use="required">
+								 					<xsd:simpleType>
+								 						<xsd:restriction base="xsd:string">
+								 							<xsd:enumeration value="binary"/>
+								 							<xsd:enumeration value="bit"/>
+								 							<xsd:enumeration value="char"/>
+								 							<xsd:enumeration value="datetime"/>
+								 							<xsd:enumeration value="decimal"/>
+								 							<xsd:enumeration value="double precision"/>
+								 							<xsd:enumeration value="float"/>
+								 							<xsd:enumeration value="image"/>
+								 							<xsd:enumeration value="int"/>
+								 							<xsd:enumeration value="money"/>
+								 							<xsd:enumeration value="nchar"/>
+								 							<xsd:enumeration value="numeric"/>
+								 							<xsd:enumeration value="nvarchar"/>
+								 							<xsd:enumeration value="real"/>
+								 							<xsd:enumeration value="smalldatetime"/>
+								 							<xsd:enumeration value="smallint"/>
+								 							<xsd:enumeration value="smallmoney"/>
+								 							<xsd:enumeration value="text"/>
+								 							<xsd:enumeration value="tinyint"/>
+								 							<xsd:enumeration value="varbinary"/>
+								 							<xsd:enumeration value="varchar"/>
+								 						</xsd:restriction>
+								 					</xsd:simpleType>
+								 				</xsd:attribute>
+
+								 				<xsd:attribute name="ColumnType" use="required">
+								 					<xsd:simpleType>
+								 						<xsd:restriction base="xsd:string">
+								 							<xsd:enumeration value="string"/>
+								 							<xsd:enumeration value="integer"/>
+								 							<xsd:enumeration value="float"/>
+								 							<xsd:enumeration value="double"/>
+								 							<xsd:enumeration value="decimal"/>
+								 							<xsd:enumeration value="boolean"/>
+								 							<xsd:enumeration value="time"/>
+								 							<xsd:enumeration value="date"/>
+								 							<xsd:enumeration value="datetime"/>
+								 							<xsd:enumeration value="byte"/>
+								 						</xsd:restriction>
+								 					</xsd:simpleType>
+								 				</xsd:attribute>
+
+												<xsd:attribute name="ColumnDisplaySize" use="required">
+												 	<xsd:simpleType>
+												 		<xsd:restriction base="xsd:positiveInteger">
+    														<xsd:minInclusive value="1"/>
+												 			<xsd:maxInclusive value="2000"/>	  
+												 		</xsd:restriction>
+												 	</xsd:simpleType>
+								 				</xsd:attribute>
+
+												<xsd:attribute name="Nullable" use="required">
+													<xsd:simpleType>
+														<xsd:restriction base="xsd:string">
+														  <xsd:enumeration value="true"/>
+														  <xsd:enumeration value="false"/>
+														</xsd:restriction>
+													</xsd:simpleType>
+								 				</xsd:attribute>
+											</xsd:complexType>
+										</xsd:element>
+							   		</xsd:sequence>
+
+								 	<xsd:attribute name="ColumnCount" use="required">
+									 	<xsd:simpleType>
+									 		<xsd:restriction base="xsd:integer">
+    											<xsd:minInclusive value="0"/>
+									 		</xsd:restriction>
+									 	</xsd:simpleType>
+								 	</xsd:attribute>
+
+								</xsd:complexType>
+ 							</xsd:element>
+
+							<xsd:element name="ResultSetData" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Row" minOccurs="0" maxOccurs="unbounded">
+											<xsd:complexType>
+							   					<xsd:sequence>
+													<xsd:element name="Column" minOccurs="0" maxOccurs="unbounded">
+														<xsd:complexType>
+															<xsd:simpleContent>
+    															<xsd:extension base="xsd:string">
+															   		<xsd:attribute name="name" use="required">
+															   			<xsd:simpleType>
+															   				<xsd:restriction base="xsd:string">
+															   					<xsd:maxLength value="30"/>
+															   				</xsd:restriction>
+															   			</xsd:simpleType>
+									 						   		</xsd:attribute>
+    														  	</xsd:extension>
+    														</xsd:simpleContent>
+														</xsd:complexType>
+													</xsd:element>
+							   					</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+
+				<xsd:element name="Outputs" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="OutputData" minOccurs="0">
+								<xsd:complexType>
+							   		<xsd:sequence>
+							 			<xsd:element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:simpleContent>
+    												<xsd:extension base="xsd:string">
+
+														<xsd:attribute name="name" use="required">
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:maxLength value="30"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:attribute>
+
+														<xsd:attribute name="type" use="required">
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:enumeration value="string"/>
+																	<xsd:enumeration value="integer"/>
+																	<xsd:enumeration value="float"/>
+																	<xsd:enumeration value="double"/>
+																	<xsd:enumeration value="decimal"/>
+																	<xsd:enumeration value="boolean"/>
+																	<xsd:enumeration value="time"/>
+																	<xsd:enumeration value="date"/>
+																	<xsd:enumeration value="datetime"/>
+																	<xsd:enumeration value="byte"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:attribute>
+   													</xsd:extension>
+	   											</xsd:simpleContent>
+											</xsd:complexType>
+							 			</xsd:element>
+								   	</xsd:sequence>
+
+									<xsd:attribute name="ParameterCount" use="required">
+									 	<xsd:simpleType>
+									 		<xsd:restriction base="xsd:integer">
+    											<xsd:minInclusive value="0"/>
+									 		</xsd:restriction>
+									 	</xsd:simpleType>
+									</xsd:attribute>
+
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+
+					</xsd:complexType>
+				</xsd:element>
+
+				<xsd:element name="Errors" minOccurs="0">
+					<xsd:complexType>
+						<xsd:simpleContent>
+    						<xsd:extension base="xsd:string">
+				 				<xsd:attribute name="code" type="xsd:string" use="required"/>
+							</xsd:extension>
+	   					</xsd:simpleContent>
+					</xsd:complexType>
+				</xsd:element>
+
+			</xsd:sequence>
+		</xsd:complexType>
+
+	</xsd:element>
+
+</xsd:schema>

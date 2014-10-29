@@ -1,0 +1,1 @@
+OSB configuration Projects & OSB Projects workspace folders here will be checkd out here from ClearCase

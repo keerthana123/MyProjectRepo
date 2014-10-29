@@ -1,0 +1,1 @@
+OSB configuration project jar file will be generated in this folder

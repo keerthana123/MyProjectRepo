@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="ConfigExport" basedir=".">
+
+	<!-- Gain Access to the Environment Variables         -->
+	<!-- Syntax: env.<ENV_VAR_NAME>                       -->
+	<property environment="env" />
+    
+    <!-- Import common properties from this File          -->
+    <property file="./build.properties" />
+
+	<!-- This path is needed for importing the WLST Tasks -->
+	<!-- for this Ant Build Script                        -->
+	<path id="task.import.classpath">
+        <pathelement path="${weblogic.home}/server/lib/weblogic.jar" />
+	</path>
+
+	<!-- Importing the WLST ANT Task for use within       -->
+	<!-- Build Script                                     -->
+	<taskdef name="wlst" classname="weblogic.ant.taskdefs.management.WLSTTask">
+		<classpath refid="task.import.classpath" />
+	</taskdef>
+
+	<!-- Path that will be used for WLST Targets          -->
+	<path id="wlst.classpath">
+		<path refid="task.import.classpath" />
+		<pathelement path="${osb.home}/lib/alsb.jar" />
+        <pathelement path="${osb.home}/modules/com.bea.common.configfwk_1.5.0.0.jar" />
+	</path>
+
+
+	<!-- Print all the Variables for Debugging            -->
+	<target name="echoAll">
+		<echo>
+#################################################################
+	Starting the Target "echoAll"			
+#################################################################       
+   env.name=${env.name}
+   env.CLASSPATH=${env.CLASSPATH}
+   env.MW_HOME=${env.MW_HOME}
+   eclipse.home=${eclipse.home}
+   metadata.dir=${metadata.dir}
+
+   fmw.home=${fmw.home}
+   wl.home=${wl.home}
+   eclipse.home=${eclipse.home}
+   weblogic.home=${weblogic.home}
+   osb.home=${osb.home}
+   workspace.dir=${workspace.dir}
+   import.customFile=${import.customFile}
+   
+#################################################################
+       </echo>
+	</target>
+
+
+	<!-- Export the OSB Setup present on the Server       -->
+	<target name="exportRemote" depends="echoAll">
+		<echo>
+#################################################################
+	Starting the Target "exportRemote"			
+#################################################################
+    	</echo>
+		<wlst fileName="${domain.export.script}" 
+                executeScriptBeforeFile="true" 
+                debug="false" 
+                failOnError="false" 
+                arguments="${wls.username} ${wls.password} ${wls.server} ${export.project} ${export.jar} ${export.customFile}">
+
+			<classpath refid="wlst.classpath" />
+
+			<script>  
+                adminUser=sys.argv[1]  
+                adminPassword=sys.argv[2]  
+                adminUrl=sys.argv[3]
+                customFile = sys.argv[6]
+                project = sys.argv[4]
+                exportJar = sys.argv[5]
+                customFile=sys.argv[6]
+
+                passphrase = "osb"
+                connect(adminUser,adminPassword,adminUrl) 
+                domainRuntime()
+          </script>
+
+		</wlst>
+	</target>
+
+	<target name="importRemote" depends="echoAll">
+		<echo>
+#################################################################
+	Starting the Target "importRemote"			
+#################################################################
+		</echo>
+		<wlst fileName="${domain.import.script}" 
+                executeScriptBeforeFile="true" 
+                debug="false" 
+                failOnError="false" 
+                arguments="${wls.username} ${wls.password} ${wls.server} ${import.project} ${import.jar} ${import.customFile}">
+
+			<classpath refid="wlst.classpath" />
+
+			<script>  
+                adminUser=sys.argv[1]  
+                adminPassword=sys.argv[2]  
+                adminUrl=sys.argv[3]
+                project=sys.argv[4]
+                importJar=sys.argv[5]
+                customFile=sys.argv[6]
+
+                passphrase = "osb"
+                connect(adminUser,adminPassword,adminUrl) 
+                domainRuntime()
+          </script>
+		</wlst>
+	</target>
+
+
+	<target name="exportWsp" depends="echoAll,replaceConfig">
+		<echo>
+#################################################################
+	Starting the Target "exportWsp"			
+#################################################################
+		</echo>
+
+		<delete failonerror="false" includeemptydirs="true" dir="${metadata.dir}" />
+
+		<java dir="${eclipse.home}" 
+                jar="${eclipse.home}/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar" 
+                fork="true" 
+                failonerror="true" 
+                maxmemory="768m">
+
+			<jvmarg line="-XX:MaxPermSize=256m" />
+            <arg line="-configJar ${config.jar}" />
+			<arg line="-configProject ${config.project}" />
+            <arg line="-configSubProjects ${config.subprojects}" />
+			<arg line="-includeDependencies ${config.includeDependencies}" />
+            <arg line="-data ${workspace.dir}" />
+            <arg line="-application com.bea.alsb.core.ConfigExport" />
+			<sysproperty key="weblogic.home" value="${weblogic.home}" />
+			<sysproperty key="osb.home" value="${osb.home}" />
+			<sysproperty key="osgi.bundlefile.limit" value="500" />
+			<sysproperty key="harvester.home" value="${osb.home}/harvester" />
+			<sysproperty key="osgi.nl" value="en_US" />
+			<sysproperty key="sun.lang.ClassLoader.allowArraySyntax" value="true" />
+			<sysproperty key="com.bea.plateng.common.util.logging.useJDKlogger" value="true"/>
+		</java>
+	</target>
+	
+	<target name="replaceConfig">
+	<echo>sap.config.find:${sap.config.find}</echo>
+	<echo>sap.config.replace:${sap.config.replace}</echo>
+		<replace dir="${workspace.dir}"  token="${sap.config.find}" value="${sap.config.replace}">		
+		</replace>
+	</target>
+	
+<target name="exportAndImportWLS" depends="exportWsp,importRemote">
+<echo>
+#################################################################
+	Starting the Target "echoAll,exportWsp,importRemote"			
+#################################################################
+		</echo>
+</target>
+</project>

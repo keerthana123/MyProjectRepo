@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Headers>
+	<Manifest-Version>manifestVersion</Manifest-Version>	
+	<Implementation-Version>buildVersion</Implementation-Version>
+	<build-date>buildDate</build-date>
+	<jdk-version>jdkVersion</jdk-version>
+</Headers>

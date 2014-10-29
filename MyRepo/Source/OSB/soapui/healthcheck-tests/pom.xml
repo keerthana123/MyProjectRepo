@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId><<ReplaceMe with GroupId(ex: com.farmers.sharedservices.billing)>></groupId>
+	<artifactId><<ReplaceMe with Artifact Id(ex: Billing-HC)>></artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name><<ReplaceMe with Test Case Name(ex: Billing-HealthCheckTests)>></name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<!--Add the repository for where Maven can find the soapUI Plugin -->
+	<!--deleting comment :03/07/2014 Time: 5:35PM-->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>smartbear-sweden-plugin-repository</id>
+			<url>http://www.soapui.org/repository/maven2/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.smartbear.soapui</groupId>
+				<artifactId>soapui-maven-plugin</artifactId>
+				<version>4.6.1</version>
+				<configuration>
+					<!--The location of your soapUI setting file -->
+					<projectFile>${basedir}/src/test/${env}/<<ReplaceMe With SoapUI Project Name (ex. BillingCSS-OSB-${env}-Master-soapui-project_1.0.xml)>></projectFile>
+					<!--Where to place the output of the run -->
+					<outputFolder>${basedir}/target/results/${env}</outputFolder>
+					<!--Make the jUnit results file -->
+					<junitReport>true</junitReport>
+					<printReport>true</printReport>
+					<exportAll>true</exportAll>
+				</configuration>
+				<executions>
+					<execution>
+						<id>soapUI</id>
+						<!--Run as part of the test phase in the Maven lifecycle -->
+						<phase>integration-test</phase>
+						<goals>
+							<!--Run the test phase of eviware:maven-soapui-plugin -->
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-report-plugin</artifactId>
+      <configuration>
+        <outputDirectory>${basedir}/target/results/site/reports/${env}</outputDirectory>
+        <reportsDirectories>
+          <reportsDirectories>${basedir}/target/results/reports/${env}</reportsDirectories>
+        </reportsDirectories>
+      </configuration>
+    </plugin>
+  </plugins>
+</reporting>
+</project>

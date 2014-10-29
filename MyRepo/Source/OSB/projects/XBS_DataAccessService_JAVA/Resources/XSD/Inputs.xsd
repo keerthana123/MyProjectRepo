@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:daws="http://ivr.acshrsolutions.com/DAWS"
+            targetNamespace="http://ivr.acshrsolutions.com/DAWS"
+            elementFormDefault="qualified" 
+            attributeFormDefault="unqualified">
+
+    <xsd:element name="Inputs">
+        <xsd:complexType>
+            <xsd:sequence>
+
+		<xsd:element name="DataSource" type="xsd:string"/>
+
+		<xsd:choice>
+                    <xsd:group ref="daws:DBSP"/>
+                    <xsd:element name="SP" type="xsd:string"/>
+    		</xsd:choice>
+
+		<xsd:element name="Arg" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:simpleContent>
+                            <xsd:extension base="xsd:string">
+
+                                <xsd:attribute name="type" use="required"> 
+                                    <xsd:simpleType>
+                                        <xsd:restriction base="xsd:string">
+                                            <xsd:enumeration value="IN"/>
+                                            <xsd:enumeration value="OUT"/>
+                                            <xsd:enumeration value="INOUT"/>
+                                        </xsd:restriction>
+                                    </xsd:simpleType>
+                                </xsd:attribute>
+
+                                <xsd:attribute name="name" use="required"> 
+                                    <xsd:simpleType>
+                                        <xsd:restriction base="xsd:string">
+                                            <xsd:maxLength value="30"/>
+                                        </xsd:restriction>
+                                    </xsd:simpleType>
+                                </xsd:attribute>
+
+                                <xsd:attribute name="jdbcType" use="required">
+                                    <xsd:simpleType>
+                                        <xsd:restriction base="xsd:string">
+                                            <xsd:enumeration value="string"/>
+                                            <xsd:enumeration value="integer"/>
+                                            <xsd:enumeration value="float"/>
+                                            <xsd:enumeration value="double"/>
+                                            <xsd:enumeration value="decimal"/>
+                                            <xsd:enumeration value="boolean"/>
+                                            <xsd:enumeration value="time"/>
+                                            <xsd:enumeration value="date"/>
+                                            <xsd:enumeration value="datetime"/>
+                                            <xsd:enumeration value="byte"/>
+                                            <xsd:enumeration value="cursor"/>
+                                        </xsd:restriction>
+                                    </xsd:simpleType>
+                                </xsd:attribute>
+
+                            </xsd:extension>
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                </xsd:element>
+
+                <xsd:element name="ReturnCode" minOccurs="0" type="daws:YesNo"/>
+
+                <xsd:element name="Oracle" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:simpleContent>
+                            <xsd:extension base="daws:YesNo">
+                               <xsd:attribute name="addResultSetOutput" type="daws:YesNo"/>
+                            </xsd:extension>
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                </xsd:element>
+
+            </xsd:sequence>
+	</xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="YesNo">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Y"/>
+            <xsd:enumeration value="N"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:group name="DBSP">
+        <xsd:sequence>
+            <xsd:element name="Database" type="xsd:string"/>
+            <xsd:element name="Procedure" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:group>
+
+</xsd:schema>
