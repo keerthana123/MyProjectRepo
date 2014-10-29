@@ -1,4 +1,3 @@
-#Tue Oct 28 18:46:49 IST 2014
-task-tag-projects-already-scanned=OSB Configuration,TestXRXSPPOC,XeroxWS,XeroxWS_LPS,TestAndReplaceFile,XBS_RightOptService,XBS_RightOptService_LPS_POC,XBS_RightOptService_POC,RightOpt_GenericBS_MultipleOperations,XBS_RightOpt_Service,RightOpt_BS_MultipleOperations,XBS_RightOptService_ACS,XBS_RightOptService_JCA,DataAccessService,IVRDataAccessService,IVRDataAccessWS,TestSybaseDrivers,XBS_RightOptService_JAVA,XBS_RightOpt_Java,XeroxJAXB,IVRDataAccessWrapper,XBS_DataAccessService_JAVA,XeroxDAOTest
+#Wed Oct 29 20:10:51 IST 2014
 eclipse.preferences.version=1
 modelmanager.maxWaitDuringConcurrentLoad=30000

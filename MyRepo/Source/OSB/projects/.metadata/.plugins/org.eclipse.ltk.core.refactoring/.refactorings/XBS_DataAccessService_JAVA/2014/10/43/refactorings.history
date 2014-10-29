@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;XBS_DataAccessService_JAVA/Resources/JARS/IVR_DataAccessWebservice.jar&apos; to &apos;IVR_DataAccessWrapper.jar&apos;" description="Rename resource &apos;IVR_DataAccessWebservice.jar&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Resources/JARS/IVR_DataAccessWebservice.jar" name="IVR_DataAccessWrapper.jar" stamp="1413887526975" updateReferences="true"/>
-</session>

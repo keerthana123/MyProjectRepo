@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;XBS_DataAccessService_JAVA/ProxyServices/RightOptWS_PS.proxy&apos; to &apos;DataAccessService.proxy&apos;" description="Rename resource &apos;RightOptWS_PS.proxy&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="ProxyServices/RightOptWS_PS.proxy" name="DataAccessService.proxy" stamp="1413356381455" updateReferences="true"/>
-</session>
